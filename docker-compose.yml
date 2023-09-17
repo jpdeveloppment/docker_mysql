@@ -1,0 +1,40 @@
+version: "3.5"
+
+services:
+  database:
+      container_name: laravel_mysql
+      image: mysql:8.1
+      ports:
+          - "3306:3306"
+      volumes:
+          - ./db/data:/var/lib/mysql
+          - ./logs:/var/log/mysql
+          - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+          - ./db/sql:/docker-entrypoint-initdb.d
+      environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: password
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password
+      extra_hosts:
+          - "host.docker.internal:host-gateway"
+
+  phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        restart: "no"
+        environment:
+            PMA_HOST: database
+            PMA_PORT: 3306
+            MYSQL_ROOT_PASSWORD: password
+            UPLOAD_LIMIT: 5000M
+        ports:
+            - "8181:80"
+
+volumes:
+    database:
+    phpmyadmin:
+
+networks:
+  default:
+    name: network_environnment
